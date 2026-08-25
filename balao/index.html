@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="description" content="Math Balloon - Aprenda matemática enquanto voa! Jogo educativo para crianças de 6 a 9 anos.">
+<title>Math Balloon — Aprenda matemática enquanto voa!</title>
+<link rel="stylesheet" href="vendor/pico.min.css">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='38' r='30' fill='%23FF6B6B'/%3E%3Cpath d='M45 66 L50 78 L55 66 Z' fill='%23FF6B6B'/%3E%3Crect x='38' y='78' width='24' height='16' rx='4' fill='%238D6E63'/%3E%3C/svg%3E">
+</head>
+<body>
+
+<div id="phaserWrap" aria-hidden="true"></div>
+
+<div id="app">
+
+  <!-- ============ TELA INICIAL ============ -->
+  <section class="screen active" id="screen-menu" aria-label="Menu principal">
+    <div class="menu-scene">
+      <div class="menu-balloon-wrap">
+        <div class="menu-balloon">
+          <div class="balloon-envelope">
+            <div class="balloon-stripe stripe-a"></div>
+            <div class="balloon-stripe stripe-b"></div>
+            <div class="balloon-stripe stripe-c"></div>
+            <div class="balloon-shine"></div>
+          </div>
+          <div class="balloon-vent"></div>
+          <div class="balloon-ropes"></div>
+          <div class="balloon-basket">🌱</div>
+        </div>
+      </div>
+
+      <div class="menu-title-area">
+        <h1 class="game-title"><span class="t-b">MATH</span> <span class="t-r">BALLOON</span></h1>
+        <p class="game-subtitle">🎈 Aprenda matemática enquanto voa! 🎈</p>
+      </div>
+
+      <nav class="menu-buttons" aria-label="Opções do menu">
+        <button class="btn btn-primary btn-jogar" data-action="play">▶ JOGAR</button>
+        <button class="btn btn-endless" data-action="endless">♾️ MODO INFINITO</button>
+        <button class="btn btn-menu" data-action="levels">🗺️ FASES</button>
+        <button class="btn btn-menu" data-action="skins">🎈 SKINS</button>
+        <button class="btn btn-menu" data-action="howto">❓ COMO JOGAR</button>
+        <button class="btn btn-menu" data-action="settings">⚙️ CONFIGURAÇÕES</button>
+      </nav>
+    </div>
+  </section>
+
+  <!-- ============ MENU DE FASES ============ -->
+  <section class="screen" id="screen-levels" aria-label="Seleção de fases">
+    <header class="screen-header">
+      <h2 class="screen-title">🗺️ ESCOLHA UMA FASE</h2>
+      <span class="stars-total">⭐ <b id="totalStars">0</b>/30</span>
+      <button class="btn btn-back" data-action="menu">⬅ VOLTAR</button>
+    </header>
+    <div class="levels-grid" id="levelsGrid"></div>
+    <div class="levels-footer">
+      <button class="btn btn-danger" id="btnResetProgress">🔄 REINICIAR PROGRESSO</button>
+    </div>
+  </section>
+
+  <!-- ============ SKINS ============ -->
+  <section class="screen" id="screen-skins" aria-label="Skins do balão">
+    <header class="screen-header">
+      <h2 class="screen-title">🎈 SKINS DO BALÃO</h2>
+      <button class="btn btn-back" data-action="menu">⬅ VOLTAR</button>
+    </header>
+    <p class="skins-info">⭐ <b id="skinsStars">0</b>/30 estrelas — conclua fases com estrelas para desbloquear novas skins!</p>
+    <div class="skins-grid" id="skinsGrid"></div>
+  </section>
+
+  <!-- ============ COMO JOGAR ============ -->
+  <section class="screen" id="screen-howto" aria-label="Como jogar">
+    <header class="screen-header">
+      <h2 class="screen-title">❓ COMO JOGAR</h2>
+      <button class="btn btn-back" data-action="menu">⬅ VOLTAR</button>
+    </header>
+    <div class="howto-steps">
+      <div class="step"><div class="step-num">1</div><div class="step-icon">🎈</div><div class="step-text">Responda certo e o balão sobe! Errou? Ele desce. Fique de olho na altitude!</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-icon">🧮</div><div class="step-text">Olhe a conta de matemática que aparece na tela.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-icon">✅</div><div class="step-text">Escolha a resposta certa entre as 4 opções.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-icon">🌳</div><div class="step-text">Acertando, o balão sobe e o planeta fica mais saudável!</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-icon">⭐</div><div class="step-text">Desvie dos obstáculos e conquiste 3 estrelas!</div></div>
+    </div>
+    <div class="howto-footer">
+      <button class="btn btn-primary btn-big" data-action="play">🎈 COMEÇAR A JOGAR</button>
+    </div>
+  </section>
+
+  <!-- ============ CONFIGURAÇÕES ============ -->
+  <section class="screen" id="screen-settings" aria-label="Configurações">
+    <header class="screen-header">
+      <h2 class="screen-title">⚙️ CONFIGURAÇÕES</h2>
+      <button class="btn btn-back" data-action="menu">⬅ VOLTAR</button>
+    </header>
+    <div class="settings-panel">
+      <div class="setting-row">
+        <span class="setting-label">🔊 Som</span>
+        <button class="toggle" id="toggleSound" role="switch" aria-checked="true"><span class="knob"></span></button>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">🎵 Música</span>
+        <button class="toggle" id="toggleMusic" role="switch" aria-checked="true"><span class="knob"></span></button>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">✨ Animações</span>
+        <button class="toggle" id="toggleAnim" role="switch" aria-checked="true"><span class="knob"></span></button>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">🔄 Redefinir progresso</span>
+        <button class="btn btn-danger btn-sm" id="btnResetSettings">APAGAR TUDO</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GAME ============ -->
+  <section class="screen" id="screen-game" aria-label="Jogo">
+    <div id="hud" aria-hidden="false">
+      <div class="hud-left">
+        <div class="hud-chip" id="hudPhase"><span class="chip-icon">🎈</span><span id="hudPhaseText">FASE 1</span></div>
+        <div class="hud-stat hud-environment">
+          <span class="hud-label">🌿 PLANETA</span>
+          <div class="bar"><div class="bar-fill env-fill" id="envBarFill"></div></div>
+        </div>
+      </div>
+      <div class="hud-center">
+        <div class="hud-stat hud-score">
+          <span class="hud-label">PONTOS</span>
+          <span class="hud-value" id="hudScore">0</span>
+        </div>
+        <div class="hud-combo" id="hudCombo">COMBO x2</div>
+      </div>
+      <div class="hud-right">
+        <div class="hud-stat hud-altitude">
+          <span class="hud-label">ALTITUDE</span>
+          <div class="bar"><div class="bar-fill alt-fill" id="altBarFill"></div></div>
+          <span class="hud-value alt-value" id="hudAltitude">100%</span>
+        </div>
+        <button class="btn btn-pause" id="btnPause" aria-label="Pausar jogo">⏸</button>
+      </div>
+    </div>
+
+    <div id="questionPanel" aria-live="polite">
+      <div class="qp-top">
+        <span class="qp-label">🧮 DESAFIO MATEMÁTICO</span>
+        <div class="timer-wrap">
+          <span class="timer-label">⏰</span>
+          <div class="bar timer-bar"><div class="bar-fill timer-fill" id="timerBarFill"></div></div>
+        </div>
+      </div>
+      <div class="qp-question" id="qpQuestion">2 + 3 = ?</div>
+      <div class="qp-feedback" id="qpFeedback"></div>
+      <div class="qp-answers" id="qpAnswers"></div>
+    </div>
+
+    <div class="rotate-hint" id="rotateHint">🔃 Vire o celular para jogar melhor!</div>
+    <div class="countdown" id="countdown" aria-hidden="true"></div>
+  </section>
+
+  <!-- ============ PAUSA ============ -->
+  <section class="screen overlay" id="screen-pause" aria-label="Jogo pausado">
+    <div class="overlay-card">
+      <h2 class="overlay-title">⏸ JOGO PAUSADO</h2>
+      <div class="overlay-buttons">
+        <button class="btn btn-primary" id="btnResume">▶ CONTINUAR</button>
+        <button class="btn btn-menu" id="btnRestart">🔄 REINICIAR FASE</button>
+        <button class="btn btn-menu" data-action="menu">🏠 SAIR PARA MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ GAME OVER ============ -->
+  <section class="screen overlay" id="screen-gameover" aria-label="Fim de jogo">
+    <div class="overlay-card">
+      <h2 class="overlay-title title-sad">😅 OPS! O BALÃO DESCEU!</h2>
+      <div class="record-badge hidden" id="goRecord">🏆 NOVO RECORDE!</div>
+      <div class="go-stats">
+        <div class="go-row"><span>PONTUAÇÃO</span><b id="goScore">0</b></div>
+        <div class="go-row"><span>PERGUNTAS</span><b id="goTotal">0</b></div>
+        <div class="go-row"><span>ACERTOS</span><b id="goCorrect">0</b></div>
+        <div class="go-row"><span>MELHOR COMBO</span><b id="goCombo">x1</b></div>
+      </div>
+      <p class="friendly-msg" id="goMsg">Não desista! Tente novamente e aprenda com seus erros. 💪</p>
+      <div class="overlay-buttons">
+        <button class="btn btn-primary" id="btnRetry">🎈 TENTAR NOVAMENTE</button>
+        <button class="btn btn-menu" id="btnGoLevels">🗺️ ESCOLHER FASE</button>
+        <button class="btn btn-menu" data-action="menu">🏠 MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FASE CONCLUÍDA ============ -->
+  <section class="screen overlay" id="screen-complete" aria-label="Fase concluída">
+    <div class="overlay-card">
+      <h2 class="overlay-title title-happy">🎉 FASE CONCLUÍDA!</h2>
+      <div class="stars-row" id="starsRow">
+        <span class="star-star" data-s="1">⭐</span>
+        <span class="star-star" data-s="2">⭐</span>
+        <span class="star-star" data-s="3">⭐</span>
+      </div>
+      <div class="go-stats">
+        <div class="go-row"><span>PONTOS</span><b id="cpScore">0</b></div>
+        <div class="go-row"><span>ACERTOS</span><b id="cpCorrect">0/0</b></div>
+        <div class="go-row"><span>COMBO MÁXIMO</span><b id="cpCombo">x1</b></div>
+      </div>
+      <p class="env-msg" id="cpEnvMsg">Cada escolha faz diferença! 🌍</p>
+      <div class="overlay-buttons">
+        <button class="btn btn-primary" id="btnNext">▶ PRÓXIMA FASE</button>
+        <button class="btn btn-menu" id="btnReplay">🔄 JOGAR NOVAMENTE</button>
+        <button class="btn btn-menu" id="btnCompleteLevels">🗺️ MENU DE FASES</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ============ MODAL DE CONFIRMAÇÃO ============ -->
+<div class="modal hidden" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-card">
+    <h3 class="modal-title" id="modalTitle">Tem certeza?</h3>
+    <p class="modal-text" id="modalText">Isso vai apagar tudo.</p>
+    <div class="modal-buttons">
+      <button class="btn btn-primary" id="modalYes">SIM</button>
+      <button class="btn btn-menu" id="modalNo">CANCELAR</button>
+    </div>
+  </div>
+</div>
+
+<script src="vendor/phaser.min.js"></script>
+<script src="vendor/gsap.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
