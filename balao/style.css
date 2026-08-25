@@ -111,7 +111,7 @@ body{
 #screen-menu{justify-content:center;align-items:center;}
 .menu-scene{display:flex;flex-direction:column;align-items:center;gap:clamp(6px,2vh,22px);}
 .menu-balloon-wrap{position:relative;}
-.menu-balloon{width:clamp(90px,22vh,170px);height:clamp(130px,30vh,235px);position:relative;animation:floatUp 3.4s ease-in-out infinite;filter:drop-shadow(0 12px 14px rgba(30,58,95,.25));}
+.menu-balloon{width:clamp(80px,min(20vh,26vw),170px);height:clamp(120px,min(28vh,34vw),235px);position:relative;animation:floatUp 3.4s ease-in-out infinite;filter:drop-shadow(0 12px 14px rgba(30,58,95,.25));}
 .balloon-envelope{
   position:absolute;top:0;left:10%;width:80%;height:62%;
   border-radius:50% 50% 48% 52%;
@@ -136,7 +136,7 @@ body{
 }
 .menu-title-area{text-align:center;animation:bounceIn .7s ease;}
 .game-title{
-  font-size:clamp(30px,8vh,64px);
+  font-size:clamp(26px,min(8vh,10vw),64px);
   line-height:1.05;
   text-shadow:0 4px 0 rgba(30,58,95,.25),0 8px 18px rgba(30,58,95,.25);
   letter-spacing:1px;
@@ -149,12 +149,13 @@ body{
 /* ================= HEADERS DE TELA ================= */
 .screen-header{
   display:flex;align-items:center;justify-content:space-between;
+  flex-wrap:wrap;gap:10px;
   padding:clamp(10px,2.4vh,20px) clamp(14px,3vw,30px);
 }
-.screen-title{font-size:clamp(18px,3.6vh,30px);color:var(--white);text-shadow:0 3px 0 rgba(30,58,95,.3);letter-spacing:1px;}
+.screen-title{font-size:clamp(15px,min(3.6vh,4.8vw),30px);color:var(--white);text-shadow:0 3px 0 rgba(30,58,95,.3);letter-spacing:1px;}
 .stars-total{
-  background:rgba(255,255,255,.92);border-radius:999px;padding:8px 16px;
-  font-weight:900;font-size:clamp(13px,2.4vh,18px);color:var(--ink);
+  background:rgba(255,255,255,.92);border-radius:999px;padding:6px 14px;
+  font-weight:900;font-size:clamp(12px,2.2vh,18px);color:var(--ink);
   box-shadow:var(--shadow);white-space:nowrap;
 }
 .stars-total b{color:var(--orange-dark);}
@@ -184,6 +185,7 @@ body{
   display:flex;flex-direction:column;align-items:center;gap:6px;
   border:4px solid transparent;
   transition:transform .15s ease, border-color .15s ease;
+  touch-action:manipulation;
 }
 .skin-card:hover{transform:translateY(-5px) scale(1.03);}
 .skin-card canvas{width:clamp(56px,11vh,84px);height:auto;}
@@ -247,6 +249,7 @@ body{
   border:4px solid transparent;
   transition:transform .15s ease, border-color .15s ease;
   animation:popIn .4s ease backwards;
+  touch-action:manipulation;
 }
 .level-card:hover{transform:translateY(-5px) scale(1.03);}
 .level-card .lv-num{font-size:clamp(11px,1.8vh,14px);font-weight:800;color:var(--sky-top);}
@@ -430,7 +433,7 @@ body{
 .ans-btn.dim{opacity:.55;}
 
 .rotate-hint{
-  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  position:absolute;top:30%;left:50%;transform:translate(-50%,-50%);
   background:rgba(30,58,95,.85);color:#fff;font-weight:800;
   padding:12px 18px;border-radius:999px;font-size:15px;
   z-index:6;display:none;
@@ -487,20 +490,28 @@ body{
 
 /* ================= RESPONSIVO ================= */
 @media (max-width:640px){
-  .hud-left{order:1;flex-direction:row;align-items:center;gap:6px;}
-  .hud-right{order:2;}
-  .hud-center{order:3;flex:1 1 100%;flex-direction:row;justify-content:center;gap:14px;}
-  #hud{flex-wrap:wrap;align-items:flex-start;}
-  .hud-stat{min-width:80px;padding:6px 10px;}
-  .hud-altitude{min-width:110px;}
+  #hud{gap:6px;padding:8px;align-items:center;align-content:flex-start;}
+  .hud-left,.hud-right{flex-direction:row;align-items:center;gap:6px;}
+  .hud-center{order:3;flex:1 1 auto;flex-direction:row;justify-content:center;align-items:center;}
+  .hud-stat{min-width:0;padding:5px 8px;gap:2px;}
+  .hud-stat .bar{width:54px;height:10px;}
+  .hud-label{font-size:8px;}
+  .hud-value{font-size:13px;}
+  .hud-chip{padding:6px 10px;font-size:11px;}
+  .btn-pause{padding:5px 10px;font-size:15px;}
+  .hud-altitude{min-width:0;}
+  .hud-combo{font-size:11px;padding:4px 10px;}
   .qp-answers{grid-template-columns:repeat(2,1fr);}
   .timer-wrap{max-width:none;flex-basis:100%;}
 }
 
-@media (max-height:500px){
+@media (max-height:620px){
   .menu-balloon{display:none;}
-  .menu-buttons{flex-direction:row;flex-wrap:wrap;justify-content:center;}
-  .game-subtitle{margin-top:4px;}
+  .menu-buttons{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:8px;}
+  .btn{padding:10px 20px;font-size:clamp(13px,2.2vh,17px);}
+  .btn-jogar{font-size:clamp(16px,3.2vh,24px);padding:12px 40px;}
+  .game-subtitle{margin-top:4px;font-size:clamp(12px,2.4vh,16px);}
+  .menu-scene{gap:clamp(4px,1.2vh,10px);}
   #questionPanel{padding:8px 12px;}
   .ans-btn{padding:8px 4px;}
 }

@@ -980,6 +980,9 @@ function initInput() {
   window.addEventListener('blur', () => {
     if (state.screen === 'game' && game.running && !game.paused && !game.ended) pauseGame();
   });
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && state.screen === 'game' && game.running && !game.paused && !game.ended) pauseGame();
+  });
 }
 
 function pressable(el) {
@@ -1551,7 +1554,18 @@ class AmbientScene extends Phaser.Scene {
       spr.sway = Utils.rand(12, 30);
       this.leaves.push(spr);
     }
-    this.events.on('resize', () => this.onResize());
+    this.lastW = this.scale.width;
+    this.lastH = this.scale.height;
+    this.scale.on('resize', () => this.checkResize());
+  }
+  checkResize() {
+    const W = this.scale.width;
+    const H = this.scale.height;
+    if (W !== this.lastW || H !== this.lastH) {
+      this.lastW = W;
+      this.lastH = H;
+      this.onResize();
+    }
   }
   onResize() {
     const W = this.scale.width;
@@ -1594,6 +1608,7 @@ class AmbientScene extends Phaser.Scene {
   }
   update(time, delta) {
     const dt = Math.min(delta, 50) / 1000;
+    this.checkResize();
     const W = this.scale.width;
     const H = this.scale.height;
     scrollLayer(this.mtnFar, 4, dt);
@@ -1768,6 +1783,7 @@ class GameScene extends Phaser.Scene {
       frequency: 40,
       emitting: false
     }).setDepth(9);
+    this.rainOwner = null;
     this.envSmoke = this.add.particles(0, 0, 'softdot', {
       speedY: { min: -38, max: -16 },
       speedX: { min: -10, max: 10 },
@@ -1797,10 +1813,21 @@ class GameScene extends Phaser.Scene {
     this.starField = null;
     this.applyTheme(th0);
     this.envUpdate();
-    this.events.on('resize', () => this.onResize());
+    this.lastW = this.scale.width;
+    this.lastH = this.scale.height;
+    this.scale.on('resize', () => this.checkResize());
     if (state.settings.animations) {
       this.fxStars.explode(16, this.balloon.x, this.balloon.y);
       this.fxGold.explode(12, this.balloon.x, this.balloon.y);
+    }
+  }
+  checkResize() {
+    const W = this.scale.width;
+    const H = this.scale.height;
+    if (W !== this.lastW || H !== this.lastH) {
+      this.lastW = W;
+      this.lastH = H;
+      this.onResize();
     }
   }
   onResize() {
@@ -1947,7 +1974,7 @@ class GameScene extends Phaser.Scene {
     else if (type === 'bird') { o.r = 24; tex = 'birdA'; o.y = Utils.rand(H * 0.18, H * 0.5); }
     else if (type === 'mountain') { o.r = 58; tex = 'obstacleMountain'; o.y = H - 92; }
     else if (type === 'tree') { o.r = 32; tex = this.envCache < 45 ? 'treeBurnt' : 'treeGreen'; o.y = H - 96; }
-    else if (type === 'factory') { o.r = 0; tex = 'factory'; o.y = H - 66; o.w = 74; o.h = Utils.rand(120, 200) * 0; }
+    else if (type === 'factory') { o.r = 0; tex = 'factory'; o.y = H - 66; o.w = 74; }
     else if (type === 'balloon') { o.r = 32; tex = 'miniBalloon'; o.y = Utils.rand(H * 0.16, H * 0.45); }
     const spr = this.add.image(o.x, o.y, tex).setDepth(9);
     if (type === 'balloon') spr.setTint(0xAB47BC);
@@ -1956,9 +1983,12 @@ class GameScene extends Phaser.Scene {
     o.spr = spr;
     o.baseY = o.y;
     if (type === 'storm') {
-      this.rainFx.setPosition(o.x, o.y + 26);
-      this.rainFx.start();
       o.rain = true;
+      if (!this.rainOwner) {
+        this.rainFx.setPosition(o.x, o.y + 26);
+        this.rainFx.start();
+        this.rainOwner = o;
+      }
     }
     if (type === 'factory') {
       o.factory = true;
@@ -1971,7 +2001,10 @@ class GameScene extends Phaser.Scene {
   }
   removeObstacle(i) {
     const o = this.obstacles[i];
-    if (o.rain) this.rainFx.stop();
+    if (this.rainOwner === o) {
+      this.rainFx.stop();
+      this.rainOwner = null;
+    }
     o.spr.destroy();
     this.obstacles.splice(i, 1);
   }
@@ -2001,7 +2034,7 @@ class GameScene extends Phaser.Scene {
         o.y = this.scale.height - 96;
       } else if (o.type === 'storm') {
         o.y = o.baseY + Math.sin(game.elapsed * 1.4 + o.phase) * 10;
-        if (o.rain) this.rainFx.setPosition(o.x, o.y + 26);
+        if (this.rainOwner === o) this.rainFx.setPosition(o.x, o.y + 26);
       } else if (o.factory) {
         o.rx = o.x - 37;
         o.topY = o.y - o.rh;
@@ -2019,7 +2052,10 @@ class GameScene extends Phaser.Scene {
         }
         if (collided) {
           o.hit = true;
-          if (o.rain) this.rainFx.stop();
+          if (this.rainOwner === o) {
+            this.rainFx.stop();
+            this.rainOwner = null;
+          }
           handleCollision();
         }
       }
@@ -2135,6 +2171,7 @@ class GameScene extends Phaser.Scene {
   }
   update(time, delta) {
     const dt = Math.min(delta, 50) / 1000;
+    this.checkResize();
     game.W = this.scale.width;
     game.H = this.scale.height;
     if (this.starField) {
