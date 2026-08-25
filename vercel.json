@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "src": "/balao/(.*)", "dest": "/balao/$1" },
+    { "src": "/(.*)", "dest": "/balao/$1" }
+  ]
+}
